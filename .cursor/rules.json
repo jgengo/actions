@@ -1,0 +1,40 @@
+{
+    "rules": [
+        {
+            "name": "Composite Action Structure",
+            "description": "Ensure every action has required files",
+            "globs": ["*/"],
+            "rules": [
+                {
+                    "name": "Check action.yml exists",
+                    "condition": "not exists('action.yml')",
+                    "fail": "Missing action.yml in action folder"
+                },
+                {
+                    "name": "Check README.md exists",
+                    "condition": "not exists('README.md')",
+                    "fail": "Missing README.md in action folder"
+                }
+            ]
+        },
+        {
+            "name": "YAML Lint",
+            "description": "Validate YAML files in actions",
+            "globs": ["**/*.yml", "**/*.yaml"],
+            "lint": "yamllint --strict"
+        },
+        {
+            "name": "Naming Convention",
+            "description": "Ensure action folders use kebab-case",
+            "globs": ["*/"],
+            "condition": "filename !~ /^[a-z0-9\\-]+$/",
+            "fail": "Folder names must be kebab-case (e.g. slack-notify)"
+        },
+        {
+            "name": "Tagging Convention",
+            "description": "Ensure Git tags follow semantic versioning (vX.Y.Z)",
+            "command": "git tag --list 'v*' | grep -E '^v[0-9]+(\\.[0-9]+){0,2}$' || exit 1",
+            "fail": "Tags must follow semantic versioning (v1, v1.2, v1.2.3)"
+        }
+    ]
+}
