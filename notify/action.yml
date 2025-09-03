@@ -1,0 +1,77 @@
+name: 'Slack/Discord Notification'
+description: 'Send notifications to Slack or Discord via webhook'
+author: 'Your Name'
+
+inputs:
+  webhook-url:
+    description: 'Webhook URL for Slack or Discord'
+    required: true
+  status:
+    description: 'Status of the job (success, failure, cancelled)'
+    required: false
+    default: 'success'
+  platform:
+    description: 'Platform to send notification to (slack or discord)'
+    required: false
+    default: 'slack'
+  message:
+    description: 'Custom message to send'
+    required: false
+    default: 'GitHub Action completed'
+  job-name:
+    description: 'Name of the job'
+    required: false
+    default: ${{ github.workflow }}
+  repo:
+    description: 'Repository name'
+    required: false
+    default: ${{ github.repository }}
+  ref:
+    description: 'Git reference (branch/tag)'
+    required: false
+    default: ${{ github.ref_name }}
+  commit:
+    description: 'Commit SHA'
+    required: false
+    default: ${{ github.sha }}
+  actor:
+    description: 'GitHub actor who triggered the workflow'
+    required: false
+    default: ${{ github.actor }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set status color
+      id: set-color
+      shell: bash
+      run: |
+        if [ "${{ inputs.status }}" == "success" ]; then
+          echo "color=good" >> $GITHUB_OUTPUT
+        elif [ "${{ inputs.status }}" == "failure" ]; then
+          echo "color=danger" >> $GITHUB_OUTPUT
+        elif [ "${{ inputs.status }}" == "cancelled" ]; then
+          echo "color=warning" >> $GITHUB_OUTPUT
+        else
+          echo "color=good" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Send notification
+      shell: bash
+      run: ${{ github.action_path }}/send.sh
+      env:
+        WEBHOOK_URL: ${{ inputs.webhook-url }}
+        STATUS: ${{ inputs.status }}
+        PLATFORM: ${{ inputs.platform }}
+        MESSAGE: ${{ inputs.message }}
+        COLOR: ${{ steps.set-color.outputs.color }}
+        JOB_NAME: ${{ inputs.job-name }}
+        REPOSITORY: ${{ inputs.repo }}
+        REF: ${{ inputs.ref }}
+        COMMIT: ${{ inputs.commit }}
+        ACTOR: ${{ inputs.actor }}
+        GITHUB_SERVER_URL: ${{ github.server_url }}
+
+branding:
+  icon: 'message-square'
+  color: 'blue'
