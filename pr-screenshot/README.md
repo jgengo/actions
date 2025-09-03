@@ -54,6 +54,10 @@ on:
 jobs:
   screenshot:
     runs-on: ubuntu-latest
+    # Required permissions for committing screenshots to the repo
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v3
       
@@ -72,6 +76,8 @@ jobs:
           auth-token: ${{ secrets.GITHUB_TOKEN }}
           comment-on-pr: "true"
 ```
+
+> **Note**: This action requires `contents: write` and `pull-requests: write` permissions to upload screenshots and comment on PRs.
 
 ## Inputs
 

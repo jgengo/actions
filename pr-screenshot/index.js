@@ -57,19 +57,55 @@ async function run() {
       const { owner, repo } = github.context.repo;
       const prNumber = github.context.payload.pull_request.number;
       
-      // Read screenshot as base64
-      const imageBuffer = fs.readFileSync(outputPath);
-      const base64Image = imageBuffer.toString('base64');
+      // Get the current commit SHA
+      const sha = github.context.sha;
+      const runId = process.env.GITHUB_RUN_ID;
       
-      // Create comment with image
-      await octokit.rest.issues.createComment({
-        owner,
-        repo,
-        issue_number: prNumber,
-        body: `## PR Screenshot\n![Screenshot](data:image/png;base64,${base64Image})`
-      });
+      // Upload the screenshot as a commit comment
+      const stats = fs.statSync(outputPath);
+      const fileSizeInBytes = stats.size;
+      const fileStream = fs.createReadStream(outputPath);
       
-      core.info('Posted screenshot to PR comment');
+      try {
+        // Create screenshots directory path for the upload
+        const screenshotPath = `screenshots/${sha}-${path.basename(outputPath)}`;
+        
+        // Upload the asset to the current repo
+        const uploadResponse = await octokit.rest.repos.createOrUpdateFileContents({
+          owner,
+          repo,
+          path: screenshotPath,
+          message: `Add screenshot for PR #${prNumber}`,
+          content: fs.readFileSync(outputPath).toString('base64'),
+          branch: github.context.ref.replace('refs/heads/', '')
+        });
+        
+        // Get the raw URL to the file
+        const screenshotUrl = uploadResponse.data.content.download_url;
+        
+        // Create comment with image link
+        await octokit.rest.issues.createComment({
+          owner,
+          repo,
+          issue_number: prNumber,
+          body: `## PR Screenshot\n![Screenshot](${screenshotUrl})`
+        });
+        
+        core.info(`Posted screenshot to PR comment: ${screenshotUrl}`);
+      } catch (error) {
+        core.warning(`Failed to upload screenshot: ${error.message}`);
+        
+        // Fallback: Comment with a link to the Actions run
+        const repoUrl = `https://github.com/${owner}/${repo}`;
+        const actionsUrl = `${repoUrl}/actions/runs/${runId}`;
+        
+        await octokit.rest.issues.createComment({
+          owner,
+          repo,
+          issue_number: prNumber,
+          body: `## PR Screenshot\nScreenshot was captured but couldn't be uploaded directly. You can find it in the [Actions run](${actionsUrl}).`
+        });
+      }
     }
     
     core.setOutput('screenshot-path', outputPath);
