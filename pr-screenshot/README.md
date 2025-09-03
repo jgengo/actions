@@ -17,7 +17,7 @@ This GitHub Action automatically captures screenshots of UI changes in pull requ
 
 ```yaml
 - name: Capture Screenshot
-  uses: your-username/actions/pr-screenshot@v1
+  uses: your-username/actions/pr-screenshot@v2
   with:
     url: "https://example.com"
     auth-token: ${{ secrets.GITHUB_TOKEN }}
@@ -27,7 +27,7 @@ This GitHub Action automatically captures screenshots of UI changes in pull requ
 
 ```yaml
 - name: Capture Screenshot
-  uses: your-username/actions/pr-screenshot@v1
+  uses: your-username/actions/pr-screenshot@v2
   with:
     url: "https://example.com/my-feature"
     wait-for-selector: ".my-component"
@@ -69,7 +69,7 @@ jobs:
           sleep 10
       
       - name: Capture Screenshot
-        uses: your-username/actions/pr-screenshot@v1
+        uses: your-username/actions/pr-screenshot@v2
         with:
           url: "http://localhost:3000"
           wait-for-selector: "#app-root"
