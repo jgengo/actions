@@ -7,6 +7,7 @@ A collection of reusable GitHub Actions for common workflow tasks.
 | Action | Description |
 |--------|-------------|
 | [notify](./notify/) | Send notifications to Slack or Discord |
+| [pr-screenshot](./pr-screenshot/) | Capture screenshots of UI changes in pull requests |
 
 ## Usage
 
