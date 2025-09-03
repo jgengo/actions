@@ -1,0 +1,43 @@
+name: 'PR Screenshot'
+description: 'Automatically captures screenshots of UI changes in PRs'
+author: 'Your Name'
+branding:
+  icon: 'camera'
+  color: 'purple'
+
+inputs:
+  url:
+    description: 'URL to capture screenshot of'
+    required: true
+  wait-for-selector:
+    description: 'CSS selector to wait for before taking screenshot'
+    required: false
+    default: 'body'
+  viewport-width:
+    description: 'Width of viewport for screenshot'
+    required: false
+    default: '1280'
+  viewport-height:
+    description: 'Height of viewport for screenshot'
+    required: false
+    default: '800'
+  output-path:
+    description: 'Path to save screenshot to'
+    required: false
+    default: './screenshot.png'
+  auth-token:
+    description: 'GitHub token for PR comments'
+    required: true
+    default: ${{ github.token }}
+  comment-on-pr:
+    description: 'Whether to comment on PR with screenshot'
+    required: false
+    default: 'true'
+  full-page:
+    description: 'Whether to capture full page screenshot'
+    required: false
+    default: 'false'
+
+runs:
+  using: 'node20'
+  main: 'index.js'
