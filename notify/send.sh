@@ -53,40 +53,36 @@ if [ "$PLATFORM" == "slack" ]; then
   "attachments": [
     {
       "color": "$COLOR",
-      "blocks": [
+      "fallback": "$STATUS_TEXT: $MESSAGE",
+      "text": "$STATUS_EMOJI *$STATUS_TEXT:* $MESSAGE",
+      "fields": [
         {
-          "type": "section",
-          "text": {
-            "type": "mrkdwn",
-            "text": "$STATUS_EMOJI *$STATUS_TEXT:* $MESSAGE"
-          }
+          "title": "Job",
+          "value": "$JOB_NAME",
+          "short": true
         },
         {
-          "type": "section",
-          "fields": [
-            {
-              "type": "mrkdwn",
-              "text": "*Job:*\n$JOB_NAME"
-            },
-            {
-              "type": "mrkdwn",
-              "text": "*Repo:*\n<$REPO_URL|$REPOSITORY>"
-            },
-            {
-              "type": "mrkdwn",
-              "text": "*Branch:*\n$REF"
-            },
-            {
-              "type": "mrkdwn",
-              "text": "*Commit:*\n<$COMMIT_URL|$SHORT_COMMIT>"
-            },
-            {
-              "type": "mrkdwn",
-              "text": "*Actor:*\n$ACTOR"
-            }
-          ]
+          "title": "Repository",
+          "value": "<$REPO_URL|$REPOSITORY>",
+          "short": true
+        },
+        {
+          "title": "Branch",
+          "value": "$REF",
+          "short": true
+        },
+        {
+          "title": "Commit",
+          "value": "<$COMMIT_URL|$SHORT_COMMIT>",
+          "short": true
+        },
+        {
+          "title": "Actor",
+          "value": "$ACTOR",
+          "short": true
         }
-      ]
+      ],
+      "mrkdwn_in": ["text", "fields"]
     }
   ]
 }
