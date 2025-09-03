@@ -14,6 +14,11 @@
                     "name": "Check README.md exists",
                     "condition": "not exists('README.md')",
                     "fail": "Missing README.md in action folder"
+                },
+                {
+                    "name": "Check action.yml is valid",
+                    "condition": "exists('action.yml') and not (filecontains('action.yml', 'name:') and filecontains('action.yml', 'description:'))",
+                    "fail": "action.yml must contain name and description fields"
                 }
             ]
         },
@@ -35,6 +40,20 @@
             "description": "Ensure Git tags follow semantic versioning (vX.Y.Z)",
             "command": "git tag --list 'v*' | grep -E '^v[0-9]+(\\.[0-9]+){0,2}$' || exit 1",
             "fail": "Tags must follow semantic versioning (v1, v1.2, v1.2.3)"
+        },
+        {
+            "name": "Action Security",
+            "description": "Ensure actions use pinned versions for external actions",
+            "globs": ["*/action.yml"],
+            "condition": "filecontains(filename, 'uses:') and not (filecontains(filename, '@v') or filecontains(filename, '@[0-9a-f]{40}'))",
+            "fail": "External actions must be pinned to specific versions or commit SHAs"
+        },
+        {
+            "name": "Action Input Validation",
+            "description": "Ensure actions define inputs properly",
+            "globs": ["*/action.yml"],
+            "condition": "filecontains(filename, 'inputs:') and not filecontains(filename, 'description:')",
+            "fail": "All inputs must have descriptions"
         }
     ]
 }
