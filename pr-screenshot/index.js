@@ -24,7 +24,8 @@ async function run() {
       defaultViewport: {
         width: viewportWidth,
         height: viewportHeight
-      }
+      },
+      headless: "new"
     });
     
     const page = await browser.newPage();
@@ -77,7 +78,7 @@ async function run() {
           path: screenshotPath,
           message: `Add screenshot for PR #${prNumber}`,
           content: fs.readFileSync(outputPath).toString('base64'),
-          branch: github.context.ref.replace('refs/heads/', '')
+          branch: github.context.payload.pull_request ? github.context.payload.pull_request.base.ref : github.context.ref.replace('refs/heads/', '')
         });
         
         // Get the raw URL to the file
