@@ -39,5 +39,28 @@ inputs:
     default: 'false'
 
 runs:
-  using: 'node20'
-  main: 'index.js'
+  using: 'composite'
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+        
+    - name: Install dependencies
+      run: npm install
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      
+    - name: Run screenshot script
+      run: node ${{ github.action_path }}/index.js
+      shell: bash
+      env:
+        INPUT_URL: ${{ inputs.url }}
+        INPUT_WAIT-FOR-SELECTOR: ${{ inputs.wait-for-selector }}
+        INPUT_VIEWPORT-WIDTH: ${{ inputs.viewport-width }}
+        INPUT_VIEWPORT-HEIGHT: ${{ inputs.viewport-height }}
+        INPUT_OUTPUT-PATH: ${{ inputs.output-path }}
+        INPUT_AUTH-TOKEN: ${{ inputs.auth-token }}
+        INPUT_COMMENT-ON-PR: ${{ inputs.comment-on-pr }}
+        INPUT_FULL-PAGE: ${{ inputs.full-page }}
+        GITHUB_TOKEN: ${{ inputs.auth-token }}
