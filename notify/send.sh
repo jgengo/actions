@@ -12,7 +12,6 @@ fi
 STATUS="${STATUS:-success}"
 PLATFORM="${PLATFORM:-slack}"
 MESSAGE="${MESSAGE:-GitHub Action completed}"
-COLOR="${COLOR:-good}"
 JOB_NAME="${JOB_NAME:-GitHub Action}"
 REPOSITORY="${REPOSITORY:-Unknown repository}"
 REF="${REF:-main}"
@@ -27,19 +26,23 @@ SHORT_COMMIT=$(echo "$COMMIT" | cut -c1-7)
 REPO_URL="${GITHUB_SERVER_URL}/${REPOSITORY}"
 COMMIT_URL="${REPO_URL}/commit/${COMMIT}"
 
-# Format status for display
+# Format status for display and set color
 if [ "$STATUS" == "success" ]; then
   STATUS_EMOJI="✅"
   STATUS_TEXT="Success"
+  COLOR="good"
 elif [ "$STATUS" == "failure" ]; then
   STATUS_EMOJI="❌"
   STATUS_TEXT="Failure"
+  COLOR="danger"
 elif [ "$STATUS" == "cancelled" ]; then
   STATUS_EMOJI="⚠️"
   STATUS_TEXT="Cancelled"
+  COLOR="warning"
 else
   STATUS_EMOJI="ℹ️"
   STATUS_TEXT="$STATUS"
+  COLOR="good"
 fi
 
 # Create payload based on platform
@@ -96,7 +99,7 @@ elif [ "$PLATFORM" == "discord" ]; then
   "embeds": [
     {
       "title": "$STATUS_TEXT: $MESSAGE",
-      "color": $([ "$COLOR" == "good" ] && echo "65280" || [ "$COLOR" == "danger" ] && echo "16711680" || echo "16776960"),
+      "color": $([ "$COLOR" == "good" ] && echo "65280" || [ "$COLOR" == "danger" ] && echo "16711680" || [ "$COLOR" == "warning" ] && echo "16776960" || echo "3447003"),
       "fields": [
         {
           "name": "Job",

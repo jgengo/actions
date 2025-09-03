@@ -17,6 +17,7 @@ This GitHub Action sends notifications to Slack or Discord via webhooks.
 ```yaml
 - name: Send Slack notification
   uses: your-username/actions/notify@v1
+  if: always()
   with:
     webhook-url: "${{ secrets.SLACK_WEBHOOK_URL }}"
     message: "Deployment completed"
@@ -27,6 +28,7 @@ This GitHub Action sends notifications to Slack or Discord via webhooks.
 ```yaml
 - name: Send notification
   uses: your-username/actions/notify@v1
+  if: always()
   with:
     webhook-url: "${{ secrets.SLACK_WEBHOOK_URL }}"
     status: "${{ job.status }}"
@@ -40,6 +42,7 @@ This GitHub Action sends notifications to Slack or Discord via webhooks.
 ```yaml
 - name: Send Discord notification
   uses: your-username/actions/notify@v1
+  if: always()
   with:
     webhook-url: "${{ secrets.DISCORD_WEBHOOK_URL }}"
     platform: discord
@@ -78,6 +81,30 @@ This GitHub Action sends notifications to Slack or Discord via webhooks.
 3. Create a new webhook
 4. Copy the webhook URL
 5. Store the webhook URL as a secret in your GitHub repository
+
+## Best Practices
+
+- Use `if: always()` to ensure notifications are sent even if previous steps fail
+- Place the notification step at the end of your workflow to capture the status of all previous steps
+
+```yaml
+steps:
+  - name: Checkout code
+    uses: actions/checkout@v5
+    
+  - name: Build and test
+    run: |
+      npm install
+      npm test
+      
+  - name: Send notification
+    uses: your-username/actions/notify@v1
+    if: always()  # This ensures the notification is sent regardless of previous step status
+    with:
+      webhook-url: "${{ secrets.SLACK_WEBHOOK_URL }}"
+      status: "${{ job.status }}"
+      message: "Build and test workflow completed"
+```
 
 ## Security Notes
 
